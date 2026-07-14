@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loan Payoff Calculator: Extra Payment Savings</title>
+<meta name="description" content="See how extra monthly payments shorten your loan and cut interest. Compare payoff time, total interest, and savings — free and private in your browser.">
+<meta property="og:title" content="Loan Payoff Calculator: Extra Payment Savings">
+<meta property="og:description" content="See how extra monthly payments shorten your loan and cut interest. Compare payoff time, total interest, and savings — free and private in your browser.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://ekbeverydaytools-tech.github.io/tools/loan-payoff-calculator.html">
+<style>
+  :root{
+    --bg:#f6f8fa;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#5b6472;
+    --border:#e3e8ee;
+    --accent:#047857;
+    --accent-soft:#e7f5ef;
+    --accent-contrast:#ffffff;
+    --line-base:#8a93a3;
+    --warn-bg:#fdf3e7;
+    --warn-text:#7c4a03;
+    --warn-border:#f0d9b5;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0e1420;
+      --card:#18202e;
+      --text:#e8ecf2;
+      --muted:#9aa5b4;
+      --border:#2a3546;
+      --accent:#3fd6a3;
+      --accent-soft:#12302a;
+      --accent-contrast:#06251c;
+      --line-base:#7c8798;
+      --warn-bg:#33260f;
+      --warn-text:#f2c483;
+      --warn-border:#5c451c;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+    line-height:1.55;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:24px 16px 40px}
+  header.site{margin:16px 0 28px}
+  header.site h1{font-size:clamp(1.5rem,3.5vw,2.1rem);margin:0 0 8px;letter-spacing:-.02em}
+  header.site p.tagline{margin:0;color:var(--muted);max-width:60ch}
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:20px;
+  }
+  form .grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+  }
+  @media (max-width:560px){ form .grid{grid-template-columns:1fr} }
+  .field label{
+    display:block;
+    font-weight:600;
+    font-size:.9rem;
+    margin-bottom:6px;
+  }
+  .field .hint{font-weight:400;color:var(--muted)}
+  .field input{
+    width:100%;
+    padding:10px 12px;
+    font-size:1rem;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--bg);
+    color:var(--text);
+  }
+  .field input:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+  .actions{margin-top:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  button.primary{
+    background:var(--accent);
+    color:var(--accent-contrast);
+    border:none;
+    border-radius:10px;
+    padding:11px 22px;
+    font-size:1rem;
+    font-weight:600;
+    cursor:pointer;
+  }
+  button.primary:hover{filter:brightness(1.06)}
+  button.primary:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+  #paymentLine{color:var(--muted);font-size:.92rem}
+  #paymentLine strong{color:var(--text)}
+  .alert{
+    margin-top:16px;
+    padding:12px 14px;
+    border-radius:10px;
+    background:var(--warn-bg);
+    color:var(--warn-text);
+    border:1px solid var(--warn-border);
+    font-size:.95rem;
+  }
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:16px;
+    margin:24px 0;
+  }
+  @media (max-width:640px){ .stats{grid-template-columns:1fr} }
+  .stat{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:18px;
+  }
+  .stat .label{font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .stat .value{font-size:clamp(1.5rem,4vw,1.9rem);font-weight:700;margin:6px 0 2px;letter-spacing:-.02em}
+  .stat .value.save{color:var(--accent)}
+  .stat .sub{font-size:.88rem;color:var(--muted)}
+  .chart-card{margin-top:8px}
+  .chart-card h2, section h2{font-size:1.15rem;margin:0 0 12px}
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:10px;font-size:.88rem;color:var(--muted)}
+  .legend .key{display:inline-flex;align-items:center;gap:7px}
+  .legend .swatch{display:inline-block;width:20px;height:4px;border-radius:2px}
+  .legend .swatch.base{background:var(--line-base)}
+  .legend .swatch.extra{background:var(--accent)}
+  #chart svg{width:100%;height:auto;display:block}
+  #chart .gridline{stroke:var(--border);stroke-width:1}
+  #chart .axis{stroke:var(--muted);stroke-width:1}
+  #chart .ticktext{fill:var(--muted);font-size:12px;font-family:inherit}
+  #chart .line-base{fill:none;stroke:var(--line-base);stroke-width:2.5;stroke-dasharray:6 5;stroke-linecap:round}
+  #chart .line-extra{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round}
+  #chart .dot-base{fill:var(--line-base)}
+  #chart .dot-extra{fill:var(--accent)}
+  details.schedule{
+    margin-top:24px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+  }
+  details.schedule summary{
+    cursor:pointer;
+    padding:16px 20px;
+    font-weight:600;
+    list-style:none;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    border-radius:14px;
+  }
+  details.schedule summary::-webkit-details-marker{display:none}
+  details.schedule summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+  details.schedule summary svg{transition:transform .15s ease;flex:none}
+  details.schedule[open] summary svg{transform:rotate(90deg)}
+  .table-note{padding:0 20px;color:var(--muted);font-size:.88rem;margin:0 0 10px}
+  .table-wrap{overflow-x:auto;padding:0 20px 18px}
+  table.amort{border-collapse:collapse;width:100%;min-width:520px;font-size:.9rem;font-variant-numeric:tabular-nums}
+  table.amort th, table.amort td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+  table.amort th:first-child, table.amort td:first-child{text-align:left}
+  table.amort th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  table.amort tr.yr td{background:var(--accent-soft)}
+  section.prose{margin-top:36px}
+  section.prose p{max-width:70ch}
+  .faq{margin-top:36px}
+  .faq h3{font-size:1rem;margin:18px 0 4px}
+  .faq p{margin:0 0 4px;color:var(--muted);max-width:70ch}
+  footer.site{
+    margin-top:44px;
+    padding-top:18px;
+    border-top:1px solid var(--border);
+    color:var(--muted);
+    font-size:.9rem;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  footer.site a{color:var(--accent);font-weight:600;text-decoration:none}
+  footer.site a:hover{text-decoration:underline}
+  a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site">
+    <h1>Loan Payoff Calculator with Extra Payments</h1>
+    <p class="tagline">Find out how many years an extra monthly payment knocks off your mortgage, car loan, or any fixed-rate loan — and exactly how much interest you keep.</p>
+  </header>
+
+  <div class="card">
+    <form id="calcForm" novalidate>
+      <div class="grid">
+        <div class="field">
+          <label for="balance">Current loan balance <span class="hint">($)</span></label>
+          <input type="number" id="balance" name="balance" value="250000" min="1" max="100000000" step="100" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="apr">Interest rate <span class="hint">(APR %)</span></label>
+          <input type="number" id="apr" name="apr" value="6.5" min="0" max="40" step="0.01" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="years">Remaining term <span class="hint">(years)</span></label>
+          <input type="number" id="years" name="years" value="25" min="0.5" max="50" step="0.5" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="extra">Extra monthly payment <span class="hint">($, on top of the standard payment)</span></label>
+          <input type="number" id="extra" name="extra" value="200" min="0" max="10000000" step="10" inputmode="decimal">
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="primary">Calculate payoff</button>
+        <span id="paymentLine" aria-live="polite"></span>
+      </div>
+    </form>
+    <div id="warnBox" class="alert" role="alert" hidden></div>
+  </div>
+
+  <div id="results" aria-live="polite">
+    <div class="stats">
+      <div class="stat">
+        <div class="label">New payoff time</div>
+        <div class="value" id="statPayoff">—</div>
+        <div class="sub" id="statPayoffSub"></div>
+      </div>
+      <div class="stat">
+        <div class="label">Interest saved</div>
+        <div class="value save" id="statSaved">—</div>
+        <div class="sub" id="statSavedSub"></div>
+      </div>
+      <div class="stat">
+        <div class="label">Time saved</div>
+        <div class="value save" id="statTime">—</div>
+        <div class="sub" id="statTimeSub"></div>
+      </div>
+    </div>
+
+    <div class="card chart-card">
+      <h2>Remaining balance over time</h2>
+      <div class="legend">
+        <span class="key"><span class="swatch base"></span>Standard payments only</span>
+        <span class="key"><span class="swatch extra"></span>With extra payments</span>
+      </div>
+      <div id="chart"></div>
+    </div>
+
+    <details class="schedule">
+      <summary>
+        <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Amortization schedule (with extra payments)
+      </summary>
+      <p class="table-note">Every month for the first two years, then annual milestones until payoff. Highlighted rows are year-end marks.</p>
+      <div class="table-wrap">
+        <table class="amort">
+          <thead>
+            <tr><th scope="col">Month</th><th scope="col">Payment</th><th scope="col">Interest</th><th scope="col">Principal</th><th scope="col">Balance</th></tr>
+          </thead>
+          <tbody id="amortBody"></tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <!-- MONETIZATION SLOT: affiliate/ad -->
+
+  <section class="prose">
+    <h2>How this works</h2>
+    <p>The calculator first derives your standard monthly payment with the amortization formula: balance × monthly rate ÷ (1 − (1 + monthly rate)<sup>−months</sup>), where the monthly rate is APR ÷ 12. For example, $250,000 at 6.5% APR with 25 years left works out to about $1,688 per month.</p>
+    <p>It then simulates the loan month by month, twice. Each simulated month, interest equals the remaining balance times the monthly rate; whatever is left of your payment reduces principal. The baseline run uses only the standard payment, the second run adds your extra amount. Because every extra dollar goes straight to principal, all future months accrue interest on a smaller balance — that compounding in reverse is why a modest extra payment removes whole years from the end of the loan, where payments would have been mostly interest already paid off.</p>
+    <p>The results compare the two runs directly: months to payoff, total interest, and the gap between them. The math assumes a fixed rate, monthly compounding, and no fees, and that your lender applies extra amounts to principal immediately — worth confirming, since some lenders credit them to the next payment instead unless you ask.</p>
+  </section>
+
+  <section class="faq" id="faq">
+    <h2>Frequently asked questions</h2>
+    <h3>Does paying a little extra each month really make a difference?</h3>
+    <p>Yes, and it is larger than most people expect. On a $250,000 loan at 6.5% with 25 years left, an extra $200 a month clears the loan roughly 5½ years early and saves around $65,000 in interest, because every extra dollar reduces the balance that all future interest is charged on.</p>
+    <h3>Is it better to pay extra monthly or make one lump-sum payment?</h3>
+    <p>Dollar for dollar, money applied sooner saves more, so a lump sum today beats the same total spread over years. But a steady monthly extra is easier to sustain and still front-loads most of the benefit. You can approximate a lump sum here by reducing the current balance input.</p>
+    <h3>Does this work for mortgages, car loans, and student loans?</h3>
+    <p>It works for any fixed-rate, monthly-compounding amortized loan, which covers most mortgages, auto loans, personal loans, and many student loans. It does not model variable rates, interest-only periods, or credit card minimum payments.</p>
+    <h3>Do I need to tell my lender to apply extra payments to principal?</h3>
+    <p>Often, yes. Some lenders treat unlabeled overpayments as an early next payment or hold them in suspense, which saves you nothing. Mark extra amounts as "apply to principal" and check your next statement to confirm the balance dropped by the full extra amount.</p>
+    <h3>Why is my lender's payoff quote slightly different from this calculator?</h3>
+    <p>Lenders often accrue interest daily rather than monthly, and payoff quotes include per-diem interest to a specific date, plus any escrow or fees. Differences of a few dollars to a few hundred are normal; the payoff timing and interest savings shown here remain accurate guides.</p>
+  </section>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Does paying a little extra each month really make a difference?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, and it is larger than most people expect. On a $250,000 loan at 6.5% with 25 years left, an extra $200 a month clears the loan roughly 5.5 years early and saves around $65,000 in interest, because every extra dollar reduces the balance that all future interest is charged on."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is it better to pay extra monthly or make one lump-sum payment?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Dollar for dollar, money applied sooner saves more, so a lump sum today beats the same total spread over years. But a steady monthly extra is easier to sustain and still front-loads most of the benefit. You can approximate a lump sum by reducing the current balance input."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does this work for mortgages, car loans, and student loans?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "It works for any fixed-rate, monthly-compounding amortized loan, which covers most mortgages, auto loans, personal loans, and many student loans. It does not model variable rates, interest-only periods, or credit card minimum payments."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need to tell my lender to apply extra payments to principal?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Often, yes. Some lenders treat unlabeled overpayments as an early next payment or hold them in suspense, which saves you nothing. Mark extra amounts as apply-to-principal and check your next statement to confirm the balance dropped by the full extra amount."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why is my lender's payoff quote slightly different from this calculator?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Lenders often accrue interest daily rather than monthly, and payoff quotes include per-diem interest to a specific date, plus any escrow or fees. Differences of a few dollars to a few hundred are normal; the payoff timing and interest savings shown here remain accurate guides."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- MONETIZATION SLOT: affiliate/ad -->
+
+  <footer class="site">
+    <span>Free forever · No signup · Runs entirely in your browser</span>
+    <a href="../index.html">More free tools</a>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var fmtC0 = new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
+  var fmtC2 = new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",minimumFractionDigits:2,maximumFractionDigits:2});
+
+  function el(id){ return document.getElementById(id); }
+  function num(id){ return parseFloat(el(id).value); }
+
+  function fmtDur(m){
+    m = Math.max(0, Math.round(m));
+    var y = Math.floor(m/12), mo = m%12;
+    if (y === 0) return mo + " mo";
+    if (mo === 0) return y + " yr";
+    return y + " yr " + mo + " mo";
+  }
+
+  function payoffDate(months){
+    var now = new Date();
+    var d = new Date(now.getFullYear(), now.getMonth() + months, 1);
+    return d.toLocaleDateString("en-US",{month:"short",year:"numeric"});
+  }
+
+  // Month-by-month amortization simulation. Cap at 1000 months.
+  function simulate(balance, r, payment){
+    if (r > 0 && payment <= balance * r + 1e-9){
+      return { negAm: true, firstInterest: balance * r };
+    }
+    var bal = balance, totalInterest = 0, months = 0;
+    var points = [{ m: 0, b: bal }];
+    var rows = [];
+    while (bal > 0.005 && months < 1000){
+      months++;
+      var interest = bal * r;
+      var principal = payment - interest;
+      var pay = payment;
+      if (principal >= bal){ principal = bal; pay = bal + interest; } // final short payment
+      totalInterest += interest;
+      bal -= principal;
+      if (bal < 0.005) bal = 0;
+      rows.push({ m: months, pay: pay, int: interest, prin: principal, bal: bal });
+      points.push({ m: months, b: bal });
+    }
+    return { negAm: false, months: months, totalInterest: totalInterest, points: points, rows: rows, capped: bal > 0.005 };
+  }
+
+  function niceStep(range){
+    var target = range / 5;
+    var mag = Math.pow(10, Math.floor(Math.log10(target)));
+    var mults = [1, 2, 2.5, 5, 10];
+    for (var i = 0; i < mults.length; i++){
+      if (mag * mults[i] >= target) return mag * mults[i];
+    }
+    return mag * 10;
+  }
+
+  function compactMoney(v){
+    if (v >= 1e6){ var m = Math.round(v/1e5)/10; return "$" + m + "M"; }
+    if (v >= 1e3){ var k = Math.round(v/100)/10; return "$" + k + "k"; }
+    return "$" + Math.round(v);
+  }
+
+  function samplePoints(pts, maxN){
+    if (pts.length <= maxN) return pts;
+    var step = Math.ceil(pts.length / maxN), out = [];
+    for (var i = 0; i < pts.length; i += step) out.push(pts[i]);
+    if (out[out.length-1] !== pts[pts.length-1]) out.push(pts[pts.length-1]);
+    return out;
+  }
+
+  function renderChart(base, extra, startBalance){
+    var W = 760, H = 320, pl = 62, pr = 16, pt = 14, pb = 42;
+    var maxM = Math.max(base.months, extra.months, 1);
+    var step = niceStep(startBalance);
+    var yMax = Math.ceil(startBalance / step) * step;
+    if (yMax <= 0) yMax = 1;
+
+    function X(m){ return pl + (m / maxM) * (W - pl - pr); }
+    function Y(b){ return pt + (1 - b / yMax) * (H - pt - pb); }
+
+    var s = "";
+    // horizontal gridlines + y labels
+    for (var v = 0; v <= yMax + 0.5; v += step){
+      var yy = Y(v);
+      s += '<line class="gridline" x1="' + pl + '" y1="' + yy.toFixed(1) + '" x2="' + (W - pr) + '" y2="' + yy.toFixed(1) + '"/>';
+      s += '<text class="ticktext" x="' + (pl - 8) + '" y="' + yy.toFixed(1) + '" text-anchor="end" dominant-baseline="middle">' + compactMoney(v) + '</text>';
+    }
+    // x ticks in years
+    var totalYears = maxM / 12;
+    var ySteps = [1, 2, 5, 10, 15, 20, 25, 30];
+    var yStep = ySteps[ySteps.length - 1];
+    for (var i = 0; i < ySteps.length; i++){
+      if (totalYears / ySteps[i] <= 6){ yStep = ySteps[i]; break; }
+    }
+    for (var yr = 0; yr * 12 <= maxM + 0.5; yr += yStep){
+      var xx = X(Math.min(yr * 12, maxM));
+      s += '<text class="ticktext" x="' + xx.toFixed(1) + '" y="' + (H - pb + 18) + '" text-anchor="middle">' + yr + '</text>';
+    }
+    s += '<text class="ticktext" x="' + ((pl + W - pr) / 2) + '" y="' + (H - 6) + '" text-anchor="middle">Years from today</text>';
+    // axes
+    s += '<line class="axis" x1="' + pl + '" y1="' + Y(0).toFixed(1) + '" x2="' + (W - pr) + '" y2="' + Y(0).toFixed(1) + '"/>';
+    s += '<line class="axis" x1="' + pl + '" y1="' + pt + '" x2="' + pl + '" y2="' + Y(0).toFixed(1) + '"/>';
+
+    function poly(points, cls){
+      var pts = samplePoints(points, 360);
+      var str = pts.map(function(p){ return X(p.m).toFixed(1) + "," + Y(p.b).toFixed(1); }).join(" ");
+      return '<polyline class="' + cls + '" points="' + str + '"/>';
+    }
+    s += poly(base.points, "line-base");
+    s += poly(extra.points, "line-extra");
+    // payoff endpoint dots
+    var bp = base.points[base.points.length - 1];
+    var ep = extra.points[extra.points.length - 1];
+    s += '<circle class="dot-base" cx="' + X(bp.m).toFixed(1) + '" cy="' + Y(bp.b).toFixed(1) + '" r="4"/>';
+    s += '<circle class="dot-extra" cx="' + X(ep.m).toFixed(1) + '" cy="' + Y(ep.b).toFixed(1) + '" r="4.5"/>';
+
+    el("chart").innerHTML =
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Line chart of remaining loan balance over time. With extra payments the balance reaches zero in ' +
+      fmtDur(extra.months) + ' instead of ' + fmtDur(base.months) + '.">' + s + "</svg>";
+  }
+
+  function renderTable(sim){
+    var rows = sim.rows, last = rows.length ? rows[rows.length - 1].m : 0;
+    var html = "";
+    for (var i = 0; i < rows.length; i++){
+      var r = rows[i];
+      var show = r.m <= 24 || r.m % 12 === 0 || r.m === last;
+      if (!show) continue;
+      var isYr = r.m > 24 && (r.m % 12 === 0 || r.m === last);
+      var name = r.m + (r.m % 12 === 0 ? " (yr " + (r.m / 12) + ")" : "");
+      html += "<tr" + (isYr ? ' class="yr"' : "") + "><td>" + name + "</td><td>" + fmtC2.format(r.pay) +
+              "</td><td>" + fmtC2.format(r.int) + "</td><td>" + fmtC2.format(r.prin) +
+              "</td><td>" + fmtC2.format(r.bal) + "</td></tr>";
+    }
+    el("amortBody").innerHTML = html;
+  }
+
+  function showWarn(msg){
+    var w = el("warnBox");
+    w.textContent = msg;
+    w.hidden = false;
+    el("results").hidden = true;
+  }
+
+  function recalc(){
+    var w = el("warnBox");
+    w.hidden = true; w.textContent = "";
+
+    var balance = num("balance"), apr = num("apr"), years = num("years"), extra = num("extra");
+    if (isNaN(extra)) extra = 0;
+
+    var problems = [];
+    if (!isFinite(balance) || balance <= 0 || balance > 1e8) problems.push("Enter a loan balance between $1 and $100,000,000.");
+    if (!isFinite(apr) || apr < 0 || apr > 40) problems.push("Enter an APR between 0% and 40%.");
+    if (!isFinite(years) || years < 0.5 || years > 50) problems.push("Enter a remaining term between 0.5 and 50 years.");
+    if (extra < 0 || extra > 1e7) problems.push("Extra payment must be between $0 and $10,000,000.");
+    if (problems.length){ showWarn(problems.join(" ")); el("paymentLine").textContent = ""; return; }
+
+    var r = apr / 1200;
+    var n = Math.round(years * 12);
+    var rawPayment = (r === 0) ? balance / n : balance * r / (1 - Math.pow(1 + r, -n));
+    var basePayment = Math.ceil(rawPayment * 100) / 100; // round up to the cent, as lenders do
+    var extraPayment = Math.round((basePayment + extra) * 100) / 100;
+
+    el("paymentLine").innerHTML = "Standard payment: <strong>" + fmtC2.format(basePayment) +
+      "/mo</strong> · with extra: <strong>" + fmtC2.format(extraPayment) + "/mo</strong>";
+
+    var base = simulate(balance, r, basePayment);
+    if (base.negAm){
+      showWarn("The monthly payment (" + fmtC2.format(basePayment) + ") does not cover the first month's interest (" +
+        fmtC2.format(base.firstInterest) + "), so the balance would never shrink. Shorten the term or double-check the APR.");
+      return;
+    }
+    var withX = simulate(balance, r, extraPayment);
+    if (withX.negAm){
+      showWarn("The total monthly payment does not cover the first month's interest, so the balance would never shrink.");
+      return;
+    }
+    if (base.capped || withX.capped){
+      showWarn("This loan would take more than 1,000 months to pay off with these numbers. Shorten the term or increase the payment.");
+      return;
+    }
+
+    el("results").hidden = false;
+
+    var saved = Math.max(0, base.totalInterest - withX.totalInterest);
+    var timeSaved = Math.max(0, base.months - withX.months);
+
+    el("statPayoff").textContent = fmtDur(withX.months);
+    el("statPayoffSub").textContent = "was " + fmtDur(base.months) + " without extra payments";
+    el("statSaved").textContent = fmtC0.format(saved);
+    el("statSavedSub").textContent = fmtC0.format(withX.totalInterest) + " total interest vs " + fmtC0.format(base.totalInterest);
+    el("statTime").textContent = fmtDur(timeSaved);
+    el("statTimeSub").textContent = "debt-free by " + payoffDate(withX.months);
+
+    renderChart(base, withX, balance);
+    renderTable(withX);
+  }
+
+  var form = el("calcForm");
+  form.addEventListener("submit", function(e){ e.preventDefault(); recalc(); });
+  var t;
+  form.addEventListener("input", function(){ clearTimeout(t); t = setTimeout(recalc, 250); });
+
+  recalc();
+})();
+</script>
+</body>
+</html>
