@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI API Cost Calculator — Claude vs GPT vs Gemini</title>
+<meta name="description" content="Compare AI API costs for Claude, GPT, and Gemini. Enter your token usage and requests per day to see cost per request, per day, and per month.">
+<meta property="og:title" content="AI API Cost Calculator — Claude vs GPT vs Gemini">
+<meta property="og:description" content="Compare AI API costs for Claude, GPT, and Gemini. Enter your token usage and requests per day to see cost per request, per day, and per month.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://ekbeverydaytools-tech.github.io/tools/ai-cost-calculator.html">
+<style>
+  :root{
+    --bg:#f6f7f9;
+    --card:#ffffff;
+    --text:#1a202c;
+    --muted:#5a6472;
+    --border:#e3e7ec;
+    --accent:#4f6df5;
+    --accent-soft:#eef1fe;
+    --accent-text:#3550d4;
+    --shadow:0 1px 3px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.06);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#12141a;
+      --card:#1b1e27;
+      --text:#e8eaf0;
+      --muted:#9aa3b2;
+      --border:#2b303c;
+      --accent:#7b93ff;
+      --accent-soft:#232a45;
+      --accent-text:#a9b8ff;
+      --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+    }
+  }
+  *{box-sizing:border-box}
+  html{overflow-x:hidden}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  main{max-width:860px;margin:0 auto;padding:24px 16px 40px}
+  header.site{max-width:860px;margin:0 auto;padding:32px 16px 0}
+  h1{font-size:clamp(1.5rem,4vw,2.1rem);line-height:1.25;margin:0 0 8px}
+  .tagline{color:var(--muted);margin:0 0 8px;max-width:60ch}
+  h2{font-size:1.2rem;margin:0 0 12px}
+  section.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:20px;
+    margin:20px 0;
+  }
+  .notice{
+    display:flex;gap:10px;align-items:flex-start;
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+    color:var(--text);
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:.95rem;
+    margin:0 0 16px;
+  }
+  .notice svg{flex:none;margin-top:3px}
+  .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+  table{border-collapse:collapse;width:100%;min-width:520px;font-size:.95rem}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+  thead th{
+    font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+    color:var(--muted);background:transparent;font-weight:600;
+  }
+  tbody tr:last-child td{border-bottom:none}
+  td.num,th.num{text-align:right}
+  input[type="number"],input[type="text"]{
+    font:inherit;
+    color:var(--text);
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:7px 10px;
+    width:110px;
+  }
+  input[type="text"]{width:160px}
+  input:focus-visible,button:focus-visible,a:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
+  .usage-grid{display:flex;flex-wrap:wrap;gap:16px}
+  .field{display:flex;flex-direction:column;gap:6px;min-width:150px;flex:1}
+  .field label{font-size:.88rem;font-weight:600}
+  .field input{width:100%}
+  .hint{font-size:.85rem;color:var(--muted);margin:12px 0 0}
+  button{
+    font:inherit;font-weight:600;
+    color:#fff;background:var(--accent);
+    border:none;border-radius:9px;
+    padding:9px 16px;cursor:pointer;
+  }
+  button:hover{filter:brightness(1.08)}
+  button.ghost{
+    background:transparent;color:var(--accent-text);
+    border:1px solid var(--accent);
+  }
+  button.remove-row{
+    background:transparent;color:var(--muted);
+    border:1px solid var(--border);
+    padding:4px 10px;border-radius:7px;font-weight:500;font-size:.85rem;
+  }
+  button.remove-row:hover{color:var(--text);border-color:var(--muted);filter:none}
+  .toolbar{margin-top:14px}
+  tr.cheapest td{background:var(--accent-soft)}
+  .badge{
+    display:inline-block;
+    background:var(--accent);color:#fff;
+    font-size:.7rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+    border-radius:999px;padding:2px 8px;margin-left:8px;vertical-align:middle;
+  }
+  .sr-only{
+    position:absolute;width:1px;height:1px;
+    padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0 0 0 0);white-space:nowrap;border:0;
+  }
+  .prose p{margin:0 0 12px}
+  .prose p:last-child{margin-bottom:0}
+  details{
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 16px;
+    margin:0 0 10px;
+    background:var(--bg);
+  }
+  details summary{cursor:pointer;font-weight:600}
+  details p{margin:10px 0 0;color:var(--muted)}
+  footer{
+    max-width:860px;margin:0 auto;padding:24px 16px 48px;
+    color:var(--muted);font-size:.9rem;text-align:center;
+  }
+  footer a{color:var(--accent-text)}
+  @media (max-width:480px){
+    section.card{padding:16px}
+    input[type="text"]{width:130px}
+    input[type="number"]{width:95px}
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <h1>AI API Cost Calculator</h1>
+  <p class="tagline">Compare what Claude, GPT, and Gemini models cost for your workload — per request, per day, and per month. Everything runs in your browser.</p>
+</header>
+
+<main>
+
+  <!-- ============ PRICING TABLE ============ -->
+  <section class="card" aria-labelledby="pricing-heading">
+    <h2 id="pricing-heading">1. Model prices (USD per million tokens)</h2>
+    <p class="notice">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <span><strong>Defaults are editable examples — always confirm current prices on each provider's pricing page.</strong> Prices change often and vary by region, tier, and context length.</span>
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col" class="num">Input $ / 1M tokens</th>
+            <th scope="col" class="num">Output $ / 1M tokens</th>
+            <th scope="col"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody id="pricing-body"><!-- rows injected by JS --></tbody>
+      </table>
+    </div>
+    <div class="toolbar">
+      <button type="button" id="add-model" class="ghost">+ Add custom model</button>
+    </div>
+  </section>
+
+  <!-- ============ USAGE INPUTS ============ -->
+  <section class="card" aria-labelledby="usage-heading">
+    <h2 id="usage-heading">2. Your usage</h2>
+    <div class="usage-grid">
+      <div class="field">
+        <label for="in-tokens">Average input tokens per request</label>
+        <input type="number" id="in-tokens" value="2000" min="0" step="1" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label for="out-tokens">Average output tokens per request</label>
+        <input type="number" id="out-tokens" value="500" min="0" step="1" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label for="req-per-day">Requests per day</label>
+        <input type="number" id="req-per-day" value="1000" min="0" step="1" inputmode="numeric">
+      </div>
+    </div>
+    <p class="hint">Rule of thumb: 1 token &asymp; 0.75 English words, so 2,000 tokens is roughly 1,500 words of prompt and context.</p>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section class="card" aria-labelledby="results-heading">
+    <h2 id="results-heading">3. Cost comparison</h2>
+    <p class="hint" style="margin:0 0 12px">Sorted by monthly cost — cheapest first. Updates live as you type.</p>
+    <div class="table-wrap" aria-live="polite">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col" class="num">Cost / request</th>
+            <th scope="col" class="num">Cost / day</th>
+            <th scope="col" class="num">Cost / month (30 days)</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- MONETIZATION SLOT: affiliate/ad -->
+
+  <!-- ============ HOW THIS WORKS ============ -->
+  <section class="card prose" aria-labelledby="how-heading">
+    <h2 id="how-heading">How this works</h2>
+    <p>AI providers bill by the token — small chunks of text roughly 0.75 English words each. Every request has two billable parts: the input (your prompt, system instructions, and any context you attach) and the output (the model's reply). Providers publish separate prices for each, quoted in US dollars per million tokens, and output tokens usually cost three to five times more than input tokens.</p>
+    <p>This calculator multiplies your average input tokens by each model's input price, does the same for output tokens, and adds the two to get a cost per request. Multiplying by your daily request count gives the daily figure, and a 30-day month gives the monthly estimate — the number that matters when you compare models or plan a budget.</p>
+    <p>Two caveats. First, real traffic is rarely uniform: prompts grow as you add context or chat history, so measure a genuine sample of your workload before committing to a model. Second, prices change frequently, and many providers discount cached prompts or batch processing by 50% or more — so treat the defaults here as a starting point, and paste in current numbers from each provider's pricing page before making a real decision.</p>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="card" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+
+    <details>
+      <summary>How is the cost of an AI API call calculated?</summary>
+      <p>Cost per call = (input tokens &divide; 1,000,000 &times; input price) + (output tokens &divide; 1,000,000 &times; output price). For example, 2,000 input tokens and 500 output tokens on a model priced at $3 in / $15 out per million tokens costs $0.006 + $0.0075 = $0.0135 per request.</p>
+    </details>
+
+    <details>
+      <summary>Are the default prices in this calculator accurate?</summary>
+      <p>They are realistic examples, not live data. Providers change pricing frequently and offer discounts for caching, batching, and volume commitments. Every price cell is editable — always confirm the current numbers on the official Anthropic, OpenAI, and Google pricing pages before deciding.</p>
+    </details>
+
+    <details>
+      <summary>How many tokens is a typical request?</summary>
+      <p>One token is roughly 0.75 English words, so 1,000 tokens is about 750 words. A short chat prompt might be 100&ndash;500 tokens, while a request that includes documents, chat history, or code context can easily reach 5,000&ndash;50,000 input tokens. Check your provider's usage dashboard for your real averages.</p>
+    </details>
+
+    <details>
+      <summary>Why do output tokens cost more than input tokens?</summary>
+      <p>Generating text is more computationally expensive than reading it: the model produces output one token at a time, while input can be processed in parallel. That is why most providers charge 3&ndash;5&times; more per output token, and why limiting response length is one of the easiest ways to cut costs.</p>
+    </details>
+
+    <details>
+      <summary>Does this calculator send my data anywhere?</summary>
+      <p>No. It is a single HTML file with no analytics, no external requests, and no server. All calculations run locally in your browser, and nothing you type is stored or transmitted.</p>
+    </details>
+  </section>
+
+  <!-- MONETIZATION SLOT: affiliate/ad -->
+
+</main>
+
+<footer>
+  <p>Free forever &middot; No signup &middot; Runs entirely in your browser</p>
+  <p><a href="../index.html">More free tools</a></p>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How is the cost of an AI API call calculated?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cost per call = (input tokens ÷ 1,000,000 × input price) + (output tokens ÷ 1,000,000 × output price). For example, 2,000 input tokens and 500 output tokens on a model priced at $3 in / $15 out per million tokens costs $0.006 + $0.0075 = $0.0135 per request."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are the default prices in this calculator accurate?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "They are realistic examples, not live data. Providers change pricing frequently and offer discounts for caching, batching, and volume commitments. Every price cell is editable — always confirm the current numbers on the official Anthropic, OpenAI, and Google pricing pages before deciding."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many tokens is a typical request?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "One token is roughly 0.75 English words, so 1,000 tokens is about 750 words. A short chat prompt might be 100–500 tokens, while a request that includes documents, chat history, or code context can easily reach 5,000–50,000 input tokens. Check your provider's usage dashboard for your real averages."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why do output tokens cost more than input tokens?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Generating text is more computationally expensive than reading it: the model produces output one token at a time, while input can be processed in parallel. That is why most providers charge 3–5× more per output token, and why limiting response length is one of the easiest ways to cut costs."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this calculator send my data anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. It is a single HTML file with no analytics, no external requests, and no server. All calculations run locally in your browser, and nothing you type is stored or transmitted."
+      }
+    }
+  ]
+}
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  var DEFAULT_MODELS = [
+    { name: "Claude Opus 4.8",   input: 5.00, output: 25.00 },
+    { name: "Claude Sonnet 4.6", input: 3.00, output: 15.00 },
+    { name: "Claude Haiku 4.5",  input: 1.00, output: 5.00 },
+    { name: "GPT-4o",            input: 2.50, output: 10.00 },
+    { name: "GPT-4o mini",       input: 0.15, output: 0.60 },
+    { name: "Gemini 2.5 Pro",    input: 1.25, output: 10.00 },
+    { name: "Gemini 2.5 Flash",  input: 0.30, output: 2.50 }
+  ];
+
+  var pricingBody = document.getElementById("pricing-body");
+  var resultsBody = document.getElementById("results-body");
+  var inTokensEl  = document.getElementById("in-tokens");
+  var outTokensEl = document.getElementById("out-tokens");
+  var reqPerDayEl = document.getElementById("req-per-day");
+  var customCount = 0;
+
+  function priceInput(cls, id, labelText, value) {
+    var td = document.createElement("td");
+    td.className = "num";
+    var label = document.createElement("label");
+    label.className = "sr-only";
+    label.setAttribute("for", id);
+    label.textContent = labelText;
+    var input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.step = "any";
+    input.inputMode = "decimal";
+    input.className = cls;
+    input.id = id;
+    if (value !== null && value !== undefined) input.value = value;
+    td.appendChild(label);
+    td.appendChild(input);
+    return td;
+  }
+
+  function addDefaultRow(model, index) {
+    var tr = document.createElement("tr");
+
+    var nameTd = document.createElement("td");
+    var nameSpan = document.createElement("span");
+    nameSpan.className = "model-name";
+    nameSpan.textContent = model.name;
+    nameTd.appendChild(nameSpan);
+    tr.appendChild(nameTd);
+
+    tr.appendChild(priceInput("price-in",  "price-in-"  + index, model.name + " input price, USD per million tokens",  model.input));
+    tr.appendChild(priceInput("price-out", "price-out-" + index, model.name + " output price, USD per million tokens", model.output));
+
+    tr.appendChild(document.createElement("td")); // empty actions cell
+    pricingBody.appendChild(tr);
+  }
+
+  function addCustomRow() {
+    customCount++;
+    var n = customCount;
+    var tr = document.createElement("tr");
+
+    var nameTd = document.createElement("td");
+    var nameLabel = document.createElement("label");
+    nameLabel.className = "sr-only";
+    nameLabel.setAttribute("for", "custom-name-" + n);
+    nameLabel.textContent = "Custom model " + n + " name";
+    var nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.id = "custom-name-" + n;
+    nameInput.className = "model-name-input";
+    nameInput.placeholder = "e.g. My fine-tuned model";
+    nameTd.appendChild(nameLabel);
+    nameTd.appendChild(nameInput);
+    tr.appendChild(nameTd);
+
+    tr.appendChild(priceInput("price-in",  "custom-in-"  + n, "Custom model " + n + " input price, USD per million tokens",  null));
+    tr.appendChild(priceInput("price-out", "custom-out-" + n, "Custom model " + n + " output price, USD per million tokens", null));
+
+    var actionTd = document.createElement("td");
+    var removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "remove-row";
+    removeBtn.textContent = "Remove";
+    removeBtn.setAttribute("aria-label", "Remove custom model row " + n);
+    removeBtn.addEventListener("click", function () {
+      tr.remove();
+      recalc();
+    });
+    actionTd.appendChild(removeBtn);
+    tr.appendChild(actionTd);
+
+    pricingBody.appendChild(tr);
+    nameInput.focus();
+    recalc();
+  }
+
+  function readNumber(el) {
+    var v = parseFloat(el.value);
+    if (!isFinite(v) || v < 0) return 0;
+    return v;
+  }
+
+  function readRows() {
+    var rows = [];
+    var trs = pricingBody.querySelectorAll("tr");
+    for (var i = 0; i < trs.length; i++) {
+      var tr = trs[i];
+      var inEl  = tr.querySelector(".price-in");
+      var outEl = tr.querySelector(".price-out");
+      if (!inEl || !outEl) continue;
+
+      var inRaw  = inEl.value.trim();
+      var outRaw = outEl.value.trim();
+      if (inRaw === "" && outRaw === "") continue; // untouched custom row
+
+      var nameInput = tr.querySelector(".model-name-input");
+      var name;
+      if (nameInput) {
+        name = nameInput.value.trim() || "Custom model";
+      } else {
+        name = tr.querySelector(".model-name").textContent;
+      }
+      rows.push({
+        name: name,
+        inPrice:  readNumber(inEl),
+        outPrice: readNumber(outEl)
+      });
+    }
+    return rows;
+  }
+
+  function fmtMoney(v) {
+    if (!isFinite(v)) return "—";
+    if (v >= 100)  return "$" + v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (v >= 1)    return "$" + v.toFixed(2);
+    if (v >= 0.01) return "$" + v.toFixed(4);
+    if (v === 0)   return "$0.00";
+    return "$" + v.toFixed(6);
+  }
+
+  function recalc() {
+    var inTokens  = readNumber(inTokensEl);
+    var outTokens = readNumber(outTokensEl);
+    var reqPerDay = readNumber(reqPerDayEl);
+
+    var rows = readRows().map(function (m) {
+      var perRequest = (inTokens / 1e6) * m.inPrice + (outTokens / 1e6) * m.outPrice;
+      var perDay = perRequest * reqPerDay;
+      return {
+        name: m.name,
+        perRequest: perRequest,
+        perDay: perDay,
+        perMonth: perDay * 30
+      };
+    });
+
+    rows.sort(function (a, b) { return a.perMonth - b.perMonth; });
+
+    resultsBody.textContent = "";
+    if (rows.length === 0) {
+      var emptyTr = document.createElement("tr");
+      var emptyTd = document.createElement("td");
+      emptyTd.colSpan = 4;
+      emptyTd.textContent = "Add at least one model with a price to see the comparison.";
+      emptyTr.appendChild(emptyTd);
+      resultsBody.appendChild(emptyTr);
+      return;
+    }
+
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var tr = document.createElement("tr");
+      if (i === 0) tr.className = "cheapest";
+
+      var nameTd = document.createElement("td");
+      nameTd.textContent = r.name;
+      if (i === 0) {
+        var badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = "Cheapest";
+        nameTd.appendChild(badge);
+      }
+      tr.appendChild(nameTd);
+
+      var vals = [r.perRequest, r.perDay, r.perMonth];
+      for (var j = 0; j < vals.length; j++) {
+        var td = document.createElement("td");
+        td.className = "num";
+        td.textContent = fmtMoney(vals[j]);
+        tr.appendChild(td);
+      }
+      resultsBody.appendChild(tr);
+    }
+  }
+
+  // Build default rows
+  for (var i = 0; i < DEFAULT_MODELS.length; i++) {
+    addDefaultRow(DEFAULT_MODELS[i], i);
+  }
+
+  // Live updates: any input in the pricing table or usage fields
+  pricingBody.addEventListener("input", recalc);
+  inTokensEl.addEventListener("input", recalc);
+  outTokensEl.addEventListener("input", recalc);
+  reqPerDayEl.addEventListener("input", recalc);
+  document.getElementById("add-model").addEventListener("click", addCustomRow);
+
+  recalc();
+})();
+</script>
+
+</body>
+</html>
