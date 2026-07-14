@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom Web Tool Development — 24h Delivery | Everyday Tools</title>
+<meta name="description" content="Get a custom calculator, generator, or web tool built and delivered within 24 hours. One self-contained file you own — no subscriptions, no dependencies.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Custom Web Tool Development — 24h Delivery">
+<meta property="og:description" content="Get a custom calculator, generator, or web tool built and delivered within 24 hours. One self-contained file you own — no subscriptions, no dependencies.">
+<meta property="og:site_name" content="Everyday Tools">
+<link rel="canonical" href="https://ekbeverydaytools-tech.github.io/services.html">
+<style>
+  :root {
+    --bg: #f5f6f9;
+    --surface: #ffffff;
+    --text: #1b2434;
+    --muted: #5a6474;
+    --accent: #4f46e5;
+    --accent-contrast: #ffffff;
+    --accent-soft: #eceafc;
+    --border: #e2e5ec;
+    --shadow: 0 1px 2px rgba(20, 24, 40, .05), 0 4px 14px rgba(20, 24, 40, .06);
+    --shadow-lift: 0 2px 4px rgba(20, 24, 40, .06), 0 10px 26px rgba(20, 24, 40, .10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1117;
+      --surface: #181c25;
+      --text: #e8eaf1;
+      --muted: #9ba4b5;
+      --accent: #8f89f6;
+      --accent-contrast: #14122e;
+      --accent-soft: #262347;
+      --border: #2a2f3c;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 4px 14px rgba(0, 0, 0, .35);
+      --shadow-lift: 0 2px 4px rgba(0, 0, 0, .4), 0 10px 26px rgba(0, 0, 0, .5);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  a { color: var(--accent); }
+  a:focus-visible,
+  summary:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Header */
+  header.site {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  header.site .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+  }
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border-radius: 9px;
+  }
+  .brand h1 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .92rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--accent);
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .back-link:hover { border-color: var(--accent); box-shadow: var(--shadow-lift); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font: inherit;
+    font-weight: 700;
+    font-size: .98rem;
+    text-decoration: none;
+    padding: 13px 24px;
+    border-radius: 12px;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-contrast);
+    box-shadow: var(--shadow);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-lift); }
+  .btn-ghost {
+    background: var(--surface);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .btn-ghost:hover { border-color: var(--accent); }
+
+  /* Hero */
+  .hero {
+    padding: 60px 0 40px;
+    text-align: center;
+  }
+  .hero .kicker {
+    display: inline-block;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 999px;
+    padding: 5px 14px;
+    margin-bottom: 18px;
+  }
+  .hero h2 {
+    font-size: clamp(1.75rem, 5vw, 2.7rem);
+    line-height: 1.12;
+    letter-spacing: -.02em;
+    font-weight: 800;
+    max-width: 24ch;
+    margin: 0 auto;
+  }
+  .hero h2 .accent { color: var(--accent); }
+  .hero p {
+    margin: 18px auto 0;
+    max-width: 52ch;
+    color: var(--muted);
+    font-size: 1.06rem;
+  }
+  .hero .cta-row {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* Proof strip */
+  .proof {
+    margin-top: 26px;
+    padding: 22px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .proof h3 {
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .proof ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .proof a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 8px 16px;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .proof a:hover { border-color: var(--accent); color: var(--accent); }
+  .proof a .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex: 0 0 auto;
+  }
+  .proof .note {
+    margin-top: 14px;
+    font-size: .9rem;
+    color: var(--muted);
+  }
+
+  /* Section headings */
+  section.block { margin-top: 72px; }
+  section.block > h2 {
+    text-align: center;
+    font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+    letter-spacing: -.01em;
+    font-weight: 800;
+  }
+  section.block > .sub {
+    text-align: center;
+    color: var(--muted);
+    max-width: 52ch;
+    margin: 10px auto 0;
+  }
+
+  /* Pricing */
+  .tiers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 18px;
+    margin-top: 32px;
+    align-items: stretch;
+  }
+  .tier {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px 24px;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .tier.featured {
+    border: 2px solid var(--accent);
+    box-shadow: var(--shadow-lift);
+  }
+  .tier .flag {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .tier h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+  .tier .price {
+    margin-top: 10px;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1;
+  }
+  .tier .price span {
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0;
+  }
+  .tier .tagline {
+    margin-top: 8px;
+    font-size: .9rem;
+    color: var(--muted);
+  }
+  .tier ul {
+    list-style: none;
+    margin: 18px 0 22px;
+    display: grid;
+    gap: 9px;
+    flex-grow: 1;
+  }
+  .tier li {
+    display: flex;
+    gap: 9px;
+    font-size: .92rem;
+    align-items: flex-start;
+  }
+  .tier li svg {
+    flex: 0 0 auto;
+    margin-top: 4px;
+    color: var(--accent);
+  }
+  .tier .btn { width: 100%; }
+
+  /* Steps */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 18px;
+    margin-top: 32px;
+  }
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+  .step .num {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin-bottom: 14px;
+  }
+  .step h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+  .step p {
+    margin-top: 8px;
+    font-size: .92rem;
+    color: var(--muted);
+  }
+
+  /* Trust */
+  .trust {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 18px;
+    margin-top: 32px;
+  }
+  .trust-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+  .trust-item .icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .trust-item h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+  .trust-item p {
+    margin-top: 8px;
+    font-size: .92rem;
+    color: var(--muted);
+  }
+
+  /* FAQ */
+  .faq { max-width: 680px; margin-left: auto; margin-right: auto; }
+  .faq details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-top: 10px;
+    box-shadow: var(--shadow);
+  }
+  .faq summary {
+    cursor: pointer;
+    font-weight: 600;
+    list-style-position: inside;
+  }
+  .faq details p {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: .95rem;
+  }
+
+  /* Final CTA */
+  .final-cta {
+    margin-top: 72px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 44px 24px;
+    text-align: center;
+  }
+  .final-cta h2 {
+    font-size: clamp(1.35rem, 3.5vw, 1.7rem);
+    letter-spacing: -.01em;
+    font-weight: 800;
+    max-width: 26ch;
+    margin: 0 auto;
+  }
+  .final-cta p {
+    margin: 12px auto 0;
+    max-width: 48ch;
+    color: var(--muted);
+  }
+  .final-cta .btn { margin-top: 24px; }
+
+  /* Footer */
+  footer.site {
+    margin-top: 72px;
+    border-top: 1px solid var(--border);
+    padding: 28px 0 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: .9rem;
+  }
+  footer.site a { font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Everyday Tools home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+          <rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/>
+          <rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/>
+          <rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/>
+          <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>
+        </svg>
+      </span>
+      <h1>Everyday Tools</h1>
+    </a>
+    <nav aria-label="Site">
+      <a class="back-link" href="index.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        Free tools
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section class="hero" aria-labelledby="hero-heading">
+      <span class="kicker">Custom tool development</span>
+      <h2 id="hero-heading">Your custom calculator, generator, or web tool — <span class="accent">delivered within 24 hours</span></h2>
+      <p>Every tool on this site was built by this service's AI-powered pipeline. Click any of them and test the quality yourself.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="mailto:ekbeverydaytools@gmail.com?subject=Custom%20tool%20inquiry">
+          Get your tool built
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="#pricing">See pricing</a>
+      </div>
+    </section>
+
+    <section class="proof" aria-labelledby="proof-heading">
+      <h3 id="proof-heading">The proof: five live tools, built in one afternoon</h3>
+      <ul>
+        <li><a href="tools/invoice-generator.html"><span class="dot" aria-hidden="true"></span>Invoice Generator</a></li>
+        <li><a href="tools/freelance-rate-calculator.html"><span class="dot" aria-hidden="true"></span>Freelance Rate Calculator</a></li>
+        <li><a href="tools/loan-payoff-calculator.html"><span class="dot" aria-hidden="true"></span>Loan Payoff Calculator</a></li>
+        <li><a href="tools/meeting-time-planner.html"><span class="dot" aria-hidden="true"></span>Meeting Time Planner</a></li>
+        <li><a href="tools/ai-cost-calculator.html"><span class="dot" aria-hidden="true"></span>AI API Cost Calculator</a></li>
+      </ul>
+      <p class="note">No mockups, no portfolio PDFs — every link above is a working product. Yours gets the same treatment.</p>
+    </section>
+
+    <!-- PRICING: the prices below are editable defaults — adjust the three amounts to suit before publishing. -->
+    <section class="block" id="pricing" aria-labelledby="pricing-heading">
+      <h2 id="pricing-heading">Simple, flat pricing</h2>
+      <p class="sub">Pick a tier, describe what you need, and get a finished tool back — usually the same day.</p>
+
+      <div class="tiers">
+
+        <article class="tier" aria-labelledby="tier-starter">
+          <h3 id="tier-starter">Starter</h3>
+          <p class="price">$149</p>
+          <p class="tagline">One focused tool, done fast.</p>
+          <ul>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+              One single-page tool: calculator, converter, or generator
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+              Delivered in 24 hours
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+              One revision round included
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+              Single file you own outright
+            </li>
+          </ul>
+          <a class="btn btn-ghost" href="mailto:ekbeverydaytools@gmail.com?subject=Custom%20tool%20inquiry">Start with Starter</a>
+        </article>
+
+        <article class="tier featured" aria-labelledby="tier-pro">
+          <span class="flag">Recommended</span>
+          <h3 id="tier-pro">Pro</h3>
+          <p class="price">$349</p>
+          <p class="tagline">For tools with more moving parts.</p>
+          <ul>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+              Advanced tool: charts, multi-step logic, data import/export
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+              Delivered in 24&ndash;48 hours
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+              Two revision rounds included
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+              Single file you own outright
+            </li>
+          </ul>
+          <a class="btn btn-primary" href="mailto:ekbeverydaytools@gmail.com?subject=Custom%20tool%20inquiry">Go Pro</a>
+        </article>
+
+        <article class="tier" aria-labelledby="tier-whitelabel">
+          <h3 id="tier-whitelabel">White-label</h3>
+          <p class="price">$749</p>
+          <p class="tagline">Tools that look like you built them.</p>
+          <ul>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+              Up to 3 tools branded for your business
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+              Your logo and colors throughout
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+              Delivered in 72 hours
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+              Unlimited light revisions for 14 days
+            </li>
+          </ul>
+          <a class="btn btn-ghost" href="mailto:ekbeverydaytools@gmail.com?subject=Custom%20tool%20inquiry">Get White-label</a>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="how-heading">
+      <h2 id="how-heading">How it works</h2>
+      <p class="sub">Three steps, no meetings required.</p>
+      <div class="steps">
+        <div class="step">
+          <span class="num" aria-hidden="true">1</span>
+          <h3>Describe what you need</h3>
+          <p>Send a few sentences about the tool you want — what goes in, what should come out, who it's for. Plain English is enough; no spec document needed.</p>
+        </div>
+        <div class="step">
+          <span class="num" aria-hidden="true">2</span>
+          <h3>Pay half upfront</h3>
+          <p>You get an invoice for half the tier price. Work starts as soon as it's paid, and the clock on your delivery window starts with it.</p>
+        </div>
+        <div class="step">
+          <span class="num" aria-hidden="true">3</span>
+          <h3>Receive a file you own</h3>
+          <p>Your tool arrives as a single file you own outright. Host it anywhere — no dependencies, no subscriptions, nothing that expires.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="trust-heading">
+      <h2 id="trust-heading">Built to never bother you again</h2>
+      <p class="sub">The same principles behind the free tools on this site apply to everything built for you.</p>
+      <div class="trust">
+        <div class="trust-item">
+          <span class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/><path d="M9 14l2 2 4-4"/></svg>
+          </span>
+          <h3>You own the code outright</h3>
+          <p>The file is yours — full source, no license fees, no strings. Edit it, rebrand it, or hand it to another developer whenever you like.</p>
+        </div>
+        <div class="trust-item">
+          <span class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>
+          </span>
+          <h3>No frameworks to maintain</h3>
+          <p>Plain HTML, CSS, and JavaScript — no packages to update, no build steps, no security patches to chase. What works today works in five years.</p>
+        </div>
+        <div class="trust-item">
+          <span class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
+          </span>
+          <h3>Runs in the visitor's browser</h3>
+          <p>All the logic executes on your visitor's device. No server to rent, no API bills, no outages at 2 a.m. — it never breaks and it never bills you.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block faq" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">Frequently asked questions</h2>
+
+      <details>
+        <summary>How fast is the turnaround, really?</summary>
+        <p>Starter tools are delivered within 24 hours of the upfront payment. Pro tools take 24&ndash;48 hours depending on complexity, and White-label packages take up to 72 hours. If something about your request would take longer, you'll hear that before any money changes hands — not after.</p>
+      </details>
+
+      <details>
+        <summary>What counts as one tool?</summary>
+        <p>One tool is one single-page utility that does one job: a calculator, a converter, a generator, a planner. A mortgage calculator is one tool; a mortgage calculator plus a separate rent-vs-buy comparison is two. If you're not sure how your idea splits up, describe it in your email and you'll get an honest count back with a quote.</p>
+      </details>
+
+      <details>
+        <summary>How does payment work?</summary>
+        <p>You receive an invoice for half the tier price upfront, and the remaining half is invoiced when the finished tool is delivered. No subscriptions, no hidden fees — two invoices and you're done.</p>
+      </details>
+
+      <details>
+        <summary>What if I don't like the result?</summary>
+        <p>Every tier includes revision rounds: one for Starter, two for Pro, and unlimited light revisions for 14 days on White-label. You review the delivered tool, send your change requests, and only pay the remaining balance once you've approved the final version.</p>
+      </details>
+
+      <details>
+        <summary>Can the tool connect to my existing website?</summary>
+        <p>Yes. Because the tool is a single self-contained file, you can upload it to any host, link to it from your navigation, or embed it in an existing page with an iframe — it will match your look if you choose the White-label tier. Tools run entirely in the browser, so connecting to your database or backend is outside the standard tiers, but you can ask for a custom quote.</p>
+      </details>
+    </section>
+
+    <section class="final-cta" aria-labelledby="cta-heading">
+      <h2 id="cta-heading">Describe your tool today, use it tomorrow</h2>
+      <p>Send a few sentences about what you need. You'll get a reply with a confirmed price and delivery time — no calls, no back-and-forth.</p>
+      <a class="btn btn-primary" href="mailto:ekbeverydaytools@gmail.com?subject=Custom%20tool%20inquiry">
+        Email your tool idea
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p>Everyday Tools &middot; <a href="index.html">Free tools</a> &middot; Custom tools delivered as single files you own</p>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How fast is the turnaround, really?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Starter tools are delivered within 24 hours of the upfront payment. Pro tools take 24–48 hours depending on complexity, and White-label packages take up to 72 hours. If something about your request would take longer, you'll hear that before any money changes hands — not after."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What counts as one tool?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "One tool is one single-page utility that does one job: a calculator, a converter, a generator, a planner. A mortgage calculator is one tool; a mortgage calculator plus a separate rent-vs-buy comparison is two. If you're not sure how your idea splits up, describe it in your email and you'll get an honest count back with a quote."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does payment work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You receive an invoice for half the tier price upfront, and the remaining half is invoiced when the finished tool is delivered. No subscriptions, no hidden fees — two invoices and you're done."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What if I don't like the result?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Every tier includes revision rounds: one for Starter, two for Pro, and unlimited light revisions for 14 days on White-label. You review the delivered tool, send your change requests, and only pay the remaining balance once you've approved the final version."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can the tool connect to my existing website?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Because the tool is a single self-contained file, you can upload it to any host, link to it from your navigation, or embed it in an existing page with an iframe — it will match your look if you choose the White-label tier. Tools run entirely in the browser, so connecting to your database or backend is outside the standard tiers, but you can ask for a custom quote."
+      }
+    }
+  ]
+}
+</script>
+
+</body>
+</html>
