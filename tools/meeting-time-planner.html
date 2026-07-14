@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meeting Time Planner – Time Zone Overlap Finder</title>
+<meta name="description" content="Find the best meeting time across time zones. Compare working hours in up to 4 cities, DST-aware, and copy a shareable summary. Free, no signup.">
+<meta property="og:title" content="Meeting Time Planner – Time Zone Overlap Finder">
+<meta property="og:description" content="Find the best meeting time across time zones. Compare working hours in up to 4 cities, DST-aware, and copy a shareable summary. Free, no signup.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://ekbeverydaytools-tech.github.io/tools/meeting-time-planner.html">
+<style>
+  :root{
+    --bg:#f5f6f9;
+    --card:#ffffff;
+    --text:#1b2434;
+    --muted:#5a6474;
+    --border:#e2e5ec;
+    --accent:#4f46e5;
+    --accent-hover:#4338ca;
+    --accent-contrast:#ffffff;
+    --accent-soft:rgba(79,70,229,.10);
+    --good-bg:#e2f4e8; --good-text:#175933;
+    --ok-bg:#faf0d7;   --ok-text:#734d0b;
+    --off-bg:#edeff3;  --off-text:#606a7a;
+    --shadow:0 1px 2px rgba(16,24,40,.05),0 4px 14px rgba(16,24,40,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#12141a;
+      --card:#1b1f29;
+      --text:#e9ebf1;
+      --muted:#9aa4b4;
+      --border:#2b3140;
+      --accent:#9aa1ff;
+      --accent-hover:#b3b8ff;
+      --accent-contrast:#12141a;
+      --accent-soft:rgba(154,161,255,.14);
+      --good-bg:#173323; --good-text:#8bd8a4;
+      --ok-bg:#362c10;   --ok-text:#e5bd60;
+      --off-bg:#222736;  --off-text:#8e97a8;
+      --shadow:0 1px 2px rgba(0,0,0,.45),0 6px 18px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1020px;margin:0 auto;padding:32px 20px 48px}
+  header.site h1{font-size:1.9rem;line-height:1.2;margin:0 0 8px;letter-spacing:-.02em}
+  header.site p.tagline{margin:0;color:var(--muted);max-width:60ch}
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:20px;
+    margin-top:22px;
+  }
+  h2{font-size:1.15rem;margin:0 0 12px;letter-spacing:-.01em}
+  label{font-weight:600;font-size:.85rem;display:block;margin-bottom:4px}
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+  }
+  input[type="date"],select{
+    font:inherit;color:var(--text);
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:8px 10px;
+    max-width:100%;
+  }
+  input[type="date"]:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
+  .controls{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+  .zones-block{flex:1 1 320px;min-width:260px}
+  .zone-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .zone-row select{flex:1 1 auto;min-width:0}
+  .btn{
+    font:inherit;font-weight:600;
+    border-radius:9px;border:1px solid var(--border);
+    background:var(--card);color:var(--text);
+    padding:8px 14px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;
+  }
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.primary{
+    background:var(--accent);color:var(--accent-contrast);border-color:var(--accent);
+  }
+  .btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover);color:var(--accent-contrast)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn:disabled:hover{border-color:var(--border);color:var(--text)}
+  .btn.icon-only{padding:8px;line-height:0}
+  .btn svg{flex:0 0 auto}
+  .hint{color:var(--muted);font-size:.85rem;margin:8px 0 0}
+  /* Grid */
+  .gridwrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;padding:6px;background:var(--bg)}
+  table.grid{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%}
+  table.grid th,table.grid td{
+    border:3px solid transparent;
+    background-clip:padding-box;
+    font-size:.8rem;
+    white-space:nowrap;
+    text-align:center;
+    border-radius:9px;
+  }
+  table.grid td{padding:7px 9px;min-width:62px}
+  table.grid th.zonehead{
+    position:sticky;left:0;z-index:2;
+    background:var(--bg);
+    background-clip:border-box;
+    border-color:var(--bg);
+    text-align:left;
+    padding:7px 12px 7px 6px;
+    font-size:.85rem;
+  }
+  table.grid th.zonehead .tzid{display:block;font-weight:400;color:var(--muted);font-size:.72rem}
+  table.grid tr.starrow th{padding:0 2px;font-size:.8rem;color:var(--accent);background:var(--bg);border-color:var(--bg)}
+  td.good{background:var(--good-bg);color:var(--good-text)}
+  td.ok{background:var(--ok-bg);color:var(--ok-text)}
+  td.off{background:var(--off-bg);color:var(--off-text)}
+  td.best{box-shadow:inset 0 0 0 2px var(--accent)}
+  td sup{font-size:.62rem;margin-left:2px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:.82rem;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .chip{width:14px;height:14px;border-radius:4px;display:inline-block}
+  .chip.good{background:var(--good-bg);border:1px solid var(--good-text)}
+  .chip.ok{background:var(--ok-bg);border:1px solid var(--ok-text)}
+  .chip.off{background:var(--off-bg);border:1px solid var(--off-text)}
+  .chip.best{background:transparent;border:2px solid var(--accent)}
+  /* Best times */
+  #bestList{margin:0 0 16px;padding-left:22px}
+  #bestList li{margin:4px 0}
+  .none-msg{color:var(--muted)}
+  .copyrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  #copyStatus{font-size:.85rem;color:var(--accent);font-weight:600}
+  /* Prose sections */
+  section.prose p{color:var(--text);max-width:72ch}
+  section.prose h2{margin-top:0}
+  .faq-item{border-top:1px solid var(--border);padding:14px 0}
+  .faq-item:first-of-type{border-top:none;padding-top:0}
+  .faq-item h3{margin:0 0 6px;font-size:1rem}
+  .faq-item p{margin:0;color:var(--muted);max-width:72ch}
+  footer.site{
+    margin-top:36px;padding-top:18px;border-top:1px solid var(--border);
+    color:var(--muted);font-size:.9rem;
+    display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;
+  }
+  footer.site a{color:var(--accent);text-decoration:none;font-weight:600}
+  footer.site a:hover{text-decoration:underline}
+  @media (max-width:520px){
+    .wrap{padding:22px 14px 40px}
+    header.site h1{font-size:1.5rem}
+    .card{padding:16px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site">
+    <h1>Meeting Time Planner</h1>
+    <p class="tagline">Compare working hours across 2&ndash;4 time zones on any date and instantly see the hours that work for everyone &mdash; daylight saving handled automatically.</p>
+  </header>
+
+  <noscript><div class="card"><p>This tool needs JavaScript to compute time zone conversions. Please enable JavaScript and reload.</p></div></noscript>
+
+  <section class="card" aria-labelledby="setupHeading">
+    <h2 id="setupHeading">1. Pick a date and your time zones</h2>
+    <div class="controls">
+      <div>
+        <label for="refDate">Reference date</label>
+        <input type="date" id="refDate">
+        <p class="hint">The day is anchored to the first time zone in the list.</p>
+      </div>
+      <div class="zones-block">
+        <div id="zoneRows"></div>
+        <button type="button" class="btn" id="addZoneBtn">
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+          Add time zone
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="gridHeading">
+    <h2 id="gridHeading">2. Scan the day, hour by hour</h2>
+    <p class="hint" id="gridCaption" style="margin:0 0 12px"></p>
+    <div class="gridwrap" role="region" aria-labelledby="gridHeading" tabindex="0">
+      <table class="grid" id="hourGrid"></table>
+    </div>
+    <div class="legend" aria-hidden="false">
+      <span><span class="chip good"></span> 9:00&ndash;17:00 (good)</span>
+      <span><span class="chip ok"></span> 8&ndash;9 / 17&ndash;19 (okay)</span>
+      <span><span class="chip off"></span> Outside hours</span>
+      <span><span class="chip best"></span> &#9733; Works for everyone</span>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="bestHeading">
+    <h2 id="bestHeading">3. Best times for everyone</h2>
+    <div id="bestArea" aria-live="polite">
+      <ul id="bestList"></ul>
+    </div>
+    <div class="copyrow">
+      <button type="button" class="btn primary" id="copyBtn">
+        <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true"><rect x="4.5" y="4.5" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M10.5 4.5v-2a1.5 1.5 0 0 0-1.5-1.5H3A1.5 1.5 0 0 0 1.5 2.5v6A1.5 1.5 0 0 0 3 10h1.5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+        Copy summary
+      </button>
+      <span id="copyStatus" role="status" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <!-- MONETIZATION SLOT: affiliate/ad -->
+
+  <section class="card prose" aria-labelledby="howHeading">
+    <h2 id="howHeading">How this works</h2>
+    <p>Pick a reference date and two to four time zones. The planner takes each hour of that day in the first zone you list and asks your browser what the local wall-clock time is in every other zone at that exact moment. Those conversions use the <code>Intl.DateTimeFormat</code> engine built into every modern browser, which ships with the full IANA time-zone database &mdash; the same data your operating system relies on. That means daylight-saving switches, half-hour offsets like India&rsquo;s, and future rule changes are handled automatically; nothing here is approximated with fixed UTC offset tables.</p>
+    <p>Each cell is coloured by how sociable that hour is locally: green for 9:00&ndash;17:00, amber for the shoulder hours (8:00&ndash;9:00 and 17:00&ndash;19:00), and grey for everything else. When a whole column lands in green for every zone, it is outlined as a best time and listed in plain English below the grid, ready to paste into an email or chat with the copy button.</p>
+    <p>Because everything runs locally in your browser, the tool works offline once loaded and never transmits the zones or dates you enter. If a cell shows +1 or &minus;1, that hour falls on the next or previous calendar day in that zone &mdash; worth double-checking before you send the invite.</p>
+  </section>
+
+  <section class="card prose" aria-labelledby="faqHeading">
+    <h2 id="faqHeading">Frequently asked questions</h2>
+    <div class="faq-item">
+      <h3>Does this handle daylight saving time correctly?</h3>
+      <p>Yes. All conversions come from your browser&rsquo;s built-in IANA time-zone database via the Intl API, so DST transitions are applied per zone and per date. Pick a date in March or November and you will see offsets shift exactly when they do in real life &mdash; no fixed offset tables are used.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What counts as a &ldquo;best time&rdquo;?</h3>
+      <p>An hour is marked as a best time when the local clock reads between 9:00 and 16:59 in every zone you selected &mdash; standard 9-to-5 working hours everywhere at once. Amber cells (8&ndash;9 am and 5&ndash;7 pm) are reasonable fallbacks when no green overlap exists.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Can I plan a meeting for a future date?</h3>
+      <p>Yes. Change the reference date to any day you like. Because DST rules differ by date, the overlap between, say, New York and London is 5 hours in July but can be 4 hours for a couple of weeks in March &mdash; the grid reflects that automatically.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Why do some cells show +1 or &minus;1?</h3>
+      <p>The columns follow one calendar day in your first zone. Zones far to the east or west may already be on the next day (+1) or still on the previous day (&minus;1) at that moment. The marker warns you that the meeting date differs in that zone.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Is anything I enter sent to a server?</h3>
+      <p>No. The page is fully client-side: no analytics, no network requests, no accounts. Your zones and dates never leave your device, and the tool keeps working offline once the page is loaded.</p>
+    </div>
+  </section>
+
+  <!-- MONETIZATION SLOT: affiliate/ad -->
+
+  <footer class="site">
+    <span>Free forever &middot; No signup &middot; Runs entirely in your browser</span>
+    <a href="../index.html">More free tools</a>
+  </footer>
+
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Does this handle daylight saving time correctly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. All conversions come from your browser's built-in IANA time-zone database via the Intl API, so DST transitions are applied per zone and per date. Pick a date in March or November and you will see offsets shift exactly when they do in real life — no fixed offset tables are used."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What counts as a \"best time\"?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An hour is marked as a best time when the local clock reads between 9:00 and 16:59 in every zone you selected — standard 9-to-5 working hours everywhere at once. Amber cells (8–9 am and 5–7 pm) are reasonable fallbacks when no green overlap exists."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I plan a meeting for a future date?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Change the reference date to any day you like. Because DST rules differ by date, the overlap between, say, New York and London is 5 hours in July but can be 4 hours for a couple of weeks in March — the grid reflects that automatically."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why do some cells show +1 or −1?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The columns follow one calendar day in your first zone. Zones far to the east or west may already be on the next day (+1) or still on the previous day (−1) at that moment. The marker warns you that the meeting date differs in that zone."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is anything I enter sent to a server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The page is fully client-side: no analytics, no network requests, no accounts. Your zones and dates never leave your device, and the tool keeps working offline once the page is loaded."
+      }
+    }
+  ]
+}
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Time zone list ---------- */
+  var FALLBACK_ZONES = [
+    "Pacific/Honolulu","America/Anchorage","America/Los_Angeles","America/Denver",
+    "America/Chicago","America/New_York","America/Toronto","America/Mexico_City",
+    "America/Sao_Paulo","America/Argentina/Buenos_Aires","UTC","Europe/London",
+    "Europe/Dublin","Europe/Paris","Europe/Berlin","Europe/Madrid","Europe/Rome",
+    "Europe/Amsterdam","Europe/Stockholm","Europe/Warsaw","Europe/Athens",
+    "Europe/Istanbul","Europe/Moscow","Africa/Cairo","Africa/Lagos",
+    "Africa/Johannesburg","Asia/Dubai","Asia/Karachi","Asia/Kolkata","Asia/Dhaka",
+    "Asia/Bangkok","Asia/Singapore","Asia/Hong_Kong","Asia/Shanghai","Asia/Tokyo",
+    "Asia/Seoul","Australia/Perth","Australia/Sydney","Pacific/Auckland"
+  ];
+  var allZones;
+  try {
+    allZones = (typeof Intl.supportedValuesOf === "function")
+      ? Intl.supportedValuesOf("timeZone") : FALLBACK_ZONES;
+  } catch (e) { allZones = FALLBACK_ZONES; }
+  // Make sure defaults exist even in exotic environments
+  ["America/New_York","Europe/London"].forEach(function(z){
+    if (allZones.indexOf(z) === -1) allZones = allZones.concat([z]);
+  });
+
+  var zones = ["America/New_York","Europe/London"];
+  var ADD_PREFS = ["America/Los_Angeles","Asia/Tokyo","Europe/Berlin","Asia/Kolkata","Australia/Sydney","UTC"];
+  var MIN_ZONES = 2, MAX_ZONES = 4;
+
+  /* ---------- DOM refs ---------- */
+  var dateEl     = document.getElementById("refDate");
+  var zoneRowsEl = document.getElementById("zoneRows");
+  var addBtn     = document.getElementById("addZoneBtn");
+  var gridEl     = document.getElementById("hourGrid");
+  var captionEl  = document.getElementById("gridCaption");
+  var bestListEl = document.getElementById("bestList");
+  var bestAreaEl = document.getElementById("bestArea");
+  var copyBtn    = document.getElementById("copyBtn");
+  var statusEl   = document.getElementById("copyStatus");
+
+  /* ---------- Intl helpers (no manual offset tables) ---------- */
+  var fmtCache = {};
+  function zoneFormatter(tz){
+    if (!fmtCache[tz]) {
+      fmtCache[tz] = new Intl.DateTimeFormat("en-US", {
+        timeZone: tz, year: "numeric", month: "numeric", day: "numeric",
+        hour: "numeric", minute: "numeric", hourCycle: "h23"
+      });
+    }
+    return fmtCache[tz];
+  }
+  // Wall-clock fields (year, month 1-12, day, hour 0-23, minute) of instant `ts` in zone `tz`
+  function getParts(ts, tz){
+    var parts = zoneFormatter(tz).formatToParts(new Date(ts));
+    var o = {};
+    for (var i = 0; i < parts.length; i++) {
+      if (parts[i].type !== "literal") o[parts[i].type] = parseInt(parts[i].value, 10);
+    }
+    if (o.hour === 24) o.hour = 0; // engine quirk guard
+    return o;
+  }
+  // UTC instant whose wall-clock time in `tz` is y-m-d h:00 (iterative inversion of Intl,
+  // converges through DST gaps/overlaps without any hardcoded offsets)
+  function wallTimeToUtc(y, m, d, h, tz){
+    var want = Date.UTC(y, m - 1, d, h, 0, 0);
+    var ts = want;
+    for (var i = 0; i < 3; i++) {
+      var p = getParts(ts, tz);
+      var asIf = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute);
+      var diff = asIf - want;
+      if (diff === 0) break;
+      ts -= diff;
+    }
+    return ts;
+  }
+
+  /* ---------- Small utils ---------- */
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+  function cityName(tz){
+    var last = tz.split("/").pop();
+    return last.replace(/_/g, " ");
+  }
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  // "9:00 AM" style, from parts
+  function fullTime(p){
+    var h12 = p.hour % 12 || 12;
+    return h12 + ":" + pad(p.minute) + " " + (p.hour < 12 ? "AM" : "PM");
+  }
+  // compact "9am" / "6:30pm" for grid cells
+  function compactTime(p){
+    var h12 = p.hour % 12 || 12;
+    return h12 + (p.minute ? ":" + pad(p.minute) : "") + (p.hour < 12 ? "am" : "pm");
+  }
+  function classify(hour){
+    if (hour >= 9 && hour < 17) return "good";
+    if (hour === 8 || hour === 17 || hour === 18) return "ok";
+    return "off";
+  }
+  var CLASS_LABEL = { good: "within 9am–5pm", ok: "shoulder hours", off: "outside working hours" };
+
+  function todayISO(){
+    var n = new Date();
+    return n.getFullYear() + "-" + pad(n.getMonth() + 1) + "-" + pad(n.getDate());
+  }
+  function parseDateInput(){
+    var v = dateEl.value;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) { dateEl.value = todayISO(); v = dateEl.value; }
+    var b = v.split("-");
+    return { y: +b[0], m: +b[1], d: +b[2] };
+  }
+  function headingDate(y, m, d){
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "short", year: "numeric", month: "short", day: "numeric", timeZone: "UTC"
+    }).format(new Date(Date.UTC(y, m - 1, d)));
+  }
+
+  /* ---------- Zone selector rows ---------- */
+  var optionsHTML = null;
+  function buildOptionsHTML(){
+    if (optionsHTML) return optionsHTML;
+    var groups = {};
+    allZones.forEach(function(z){
+      var region = z.indexOf("/") > -1 ? z.split("/")[0] : "Other";
+      (groups[region] = groups[region] || []).push(z);
+    });
+    var html = "";
+    Object.keys(groups).sort().forEach(function(region){
+      html += '<optgroup label="' + esc(region) + '">';
+      groups[region].sort().forEach(function(z){
+        html += '<option value="' + esc(z) + '">' + esc(z.replace(/_/g, " ")) + "</option>";
+      });
+      html += "</optgroup>";
+    });
+    optionsHTML = html;
+    return html;
+  }
+
+  function renderZoneRows(){
+    zoneRowsEl.innerHTML = "";
+    zones.forEach(function(tz, i){
+      var row = document.createElement("div");
+      row.className = "zone-row";
+
+      var label = document.createElement("label");
+      label.className = "sr-only";
+      label.setAttribute("for", "zsel-" + i);
+      label.textContent = "Time zone " + (i + 1) + (i === 0 ? " (sets the reference day)" : "");
+      row.appendChild(label);
+
+      var sel = document.createElement("select");
+      sel.id = "zsel-" + i;
+      sel.innerHTML = buildOptionsHTML();
+      sel.value = tz;
+      sel.addEventListener("change", function(){
+        zones[i] = sel.value;
+        var rmBtn = row.querySelector("button.icon-only");
+        if (rmBtn) rmBtn.setAttribute("aria-label", "Remove time zone " + (i + 1) + " (" + cityName(sel.value) + ")");
+        render();
+      });
+      row.appendChild(sel);
+
+      if (zones.length > MIN_ZONES) {
+        var rm = document.createElement("button");
+        rm.type = "button";
+        rm.className = "btn icon-only";
+        rm.setAttribute("aria-label", "Remove time zone " + (i + 1) + " (" + cityName(tz) + ")");
+        rm.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>';
+        rm.addEventListener("click", function(){
+          zones.splice(i, 1);
+          renderZoneRows();
+          render();
+        });
+        row.appendChild(rm);
+      }
+      zoneRowsEl.appendChild(row);
+    });
+    addBtn.disabled = zones.length >= MAX_ZONES;
+  }
+
+  addBtn.addEventListener("click", function(){
+    if (zones.length >= MAX_ZONES) return;
+    var next = null;
+    for (var i = 0; i < ADD_PREFS.length; i++) {
+      if (zones.indexOf(ADD_PREFS[i]) === -1 && allZones.indexOf(ADD_PREFS[i]) > -1) { next = ADD_PREFS[i]; break; }
+    }
+    if (!next) next = allZones[0];
+    zones.push(next);
+    renderZoneRows();
+    render();
+  });
+
+  /* ---------- Main render ---------- */
+  var lastSummary = "";
+
+  function render(){
+    var ref = parseDateInput();
+    var baseTz = zones[0];
+    var dateLabel = headingDate(ref.y, ref.m, ref.d);
+    var refUTC = Date.UTC(ref.y, ref.m - 1, ref.d);
+
+    // One UTC instant per hour of the reference day in the base zone
+    var colTs = [];
+    for (var h = 0; h < 24; h++) colTs.push(wallTimeToUtc(ref.y, ref.m, ref.d, h, baseTz));
+
+    // Wall-clock parts for every zone at every column instant
+    var rowData = zones.map(function(tz){
+      return colTs.map(function(ts){ return getParts(ts, tz); });
+    });
+
+    // Columns where every zone is inside 9:00-16:59
+    var best = [];
+    for (h = 0; h < 24; h++) {
+      var all = rowData.every(function(r){ return r[h].hour >= 9 && r[h].hour < 17; });
+      if (all) best.push(h);
+    }
+    var bestSet = {};
+    best.forEach(function(h){ bestSet[h] = true; });
+
+    captionEl.textContent = "Each column is one hour of " + dateLabel +
+      " in " + cityName(baseTz) + ". Scroll sideways to see the whole day.";
+
+    // --- table ---
+    var html = '<tr class="starrow"><th class="zonehead" scope="col"><span class="sr-only">Time zone</span></th>';
+    for (h = 0; h < 24; h++) {
+      html += '<th scope="col">' + (bestSet[h]
+        ? '<span title="Works for everyone" aria-hidden="true">&#9733;</span><span class="sr-only">Hour ' + h + ', works for everyone</span>'
+        : '<span class="sr-only">Hour ' + h + '</span>') + "</th>";
+    }
+    html += "</tr>";
+
+    zones.forEach(function(tz, zi){
+      html += '<tr><th class="zonehead" scope="row">' + esc(cityName(tz)) +
+              '<span class="tzid">' + esc(tz) + (zi === 0 ? " &middot; day basis" : "") + "</span></th>";
+      for (var h = 0; h < 24; h++) {
+        var p = rowData[zi][h];
+        var cat = classify(p.hour);
+        var dayDiff = Math.round((Date.UTC(p.year, p.month - 1, p.day) - refUTC) / 86400000);
+        var diffMark = dayDiff === 0 ? "" :
+          "<sup>" + (dayDiff > 0 ? "+" + dayDiff : "−" + Math.abs(dayDiff)) + "</sup>";
+        var title = fullTime(p) + " in " + cityName(tz) + " — " + CLASS_LABEL[cat] +
+                    (bestSet[h] ? " — works for everyone" : "");
+        html += '<td class="' + cat + (bestSet[h] ? " best" : "") + '" title="' + esc(title) + '">' +
+                compactTime(p) + diffMark + "</td>";
+      }
+      html += "</tr>";
+    });
+    gridEl.innerHTML = html;
+
+    // --- best times list + copy summary ---
+    var lines = [];
+    lines.push("Best meeting times — " + dateLabel);
+    lines.push("Zones: " + zones.map(function(z){ return cityName(z) + " (" + z + ")"; }).join(", "));
+
+    var listHtml = "";
+    if (best.length) {
+      lines.push("Hours between 9:00 AM and 5:00 PM for everyone:");
+      best.forEach(function(h){
+        var text = zones.map(function(tz, zi){
+          return fullTime(rowData[zi][h]) + " in " + cityName(tz);
+        }).join(" = ");
+        listHtml += "<li>" + esc(text) + "</li>";
+        lines.push("- " + text);
+      });
+      bestListEl.innerHTML = listHtml;
+      bestListEl.style.display = "";
+      var old = bestAreaEl.querySelector(".none-msg");
+      if (old) old.remove();
+    } else {
+      bestListEl.innerHTML = "";
+      bestListEl.style.display = "none";
+      var msg = "No single hour falls between 9:00 AM and 5:00 PM in every zone on this date. Look for amber cells (8–9 am or 5–7 pm locally) as the fairest compromise.";
+      lines.push(msg);
+      var none = bestAreaEl.querySelector(".none-msg");
+      if (!none) {
+        none = document.createElement("p");
+        none.className = "none-msg";
+        bestAreaEl.insertBefore(none, bestListEl);
+      }
+      none.textContent = msg;
+    }
+    lines.push("");
+    lines.push("Made with Meeting Time Planner — free, private, runs in your browser.");
+    lastSummary = lines.join("\n");
+  }
+
+  /* ---------- Copy button ---------- */
+  function showCopied(ok){
+    statusEl.textContent = ok ? "Copied to clipboard!" : "Copy failed — select and copy the list above.";
+    clearTimeout(showCopied._t);
+    showCopied._t = setTimeout(function(){ statusEl.textContent = ""; }, 2500);
+  }
+  function legacyCopy(text){
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    showCopied(ok);
+  }
+  copyBtn.addEventListener("click", function(){
+    var text = lastSummary;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        function(){ showCopied(true); },
+        function(){ legacyCopy(text); }
+      );
+    } else {
+      legacyCopy(text);
+    }
+  });
+
+  /* ---------- Init ---------- */
+  dateEl.value = todayISO();
+  dateEl.addEventListener("change", render);
+  renderZoneRows();
+  render();
+})();
+</script>
+</body>
+</html>
