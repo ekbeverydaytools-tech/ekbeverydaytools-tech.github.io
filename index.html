@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Online Tools — Calculators &amp; More | Everyday Tools</title>
+<meta name="description" content="Five fast, free, private tools: invoice generator, freelance rate calculator, loan payoff calculator, meeting time planner, and AI API cost calculator.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Free Online Tools — Calculators &amp; More">
+<meta property="og:description" content="Five fast, free, private tools: invoice generator, freelance rate calculator, loan payoff calculator, meeting time planner, and AI API cost calculator.">
+<meta property="og:site_name" content="Everyday Tools">
+<link rel="canonical" href="https://ekbeverydaytools-tech.github.io/">
+<style>
+  :root {
+    --bg: #f5f6f9;
+    --surface: #ffffff;
+    --text: #1b2434;
+    --muted: #5a6474;
+    --accent: #4f46e5;
+    --accent-contrast: #ffffff;
+    --accent-soft: #eceafc;
+    --border: #e2e5ec;
+    --shadow: 0 1px 2px rgba(20, 24, 40, .05), 0 4px 14px rgba(20, 24, 40, .06);
+    --shadow-lift: 0 2px 4px rgba(20, 24, 40, .06), 0 10px 26px rgba(20, 24, 40, .10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1117;
+      --surface: #181c25;
+      --text: #e8eaf1;
+      --muted: #9ba4b5;
+      --accent: #8f89f6;
+      --accent-contrast: #14122e;
+      --accent-soft: #262347;
+      --border: #2a2f3c;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 4px 14px rgba(0, 0, 0, .35);
+      --shadow-lift: 0 2px 4px rgba(0, 0, 0, .4), 0 10px 26px rgba(0, 0, 0, .5);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  a { color: var(--accent); }
+  a:focus-visible,
+  input:focus-visible,
+  summary:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Header */
+  header.site {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border-radius: 9px;
+  }
+  .brand h1 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 56px 0 36px;
+    text-align: center;
+  }
+  .hero h2 {
+    font-size: clamp(1.7rem, 4.5vw, 2.6rem);
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    font-weight: 800;
+    max-width: 21ch;
+    margin: 0 auto;
+  }
+  .hero h2 .accent { color: var(--accent); }
+  .hero p {
+    margin: 16px auto 0;
+    max-width: 44ch;
+    color: var(--muted);
+    font-size: 1.06rem;
+  }
+
+  /* Filter */
+  .filter-row {
+    margin: 34px auto 22px;
+    max-width: 460px;
+  }
+  .filter-row label {
+    display: block;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .filter-row input {
+    width: 100%;
+    font: inherit;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    box-shadow: var(--shadow);
+  }
+  .filter-row input::placeholder { color: var(--muted); }
+  .filter-status {
+    display: block;
+    margin-top: 8px;
+    font-size: .82rem;
+    color: var(--muted);
+    min-height: 1.2em;
+  }
+
+  /* Card grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+    gap: 16px;
+    padding-bottom: 8px;
+  }
+  .tool-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: var(--shadow);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .tool-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+    border-color: var(--accent);
+  }
+  .tool-card.is-hidden { display: none; }
+  .tool-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    flex: 0 0 auto;
+  }
+  .tool-card h3 {
+    font-size: 1.03rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+  .tool-card p {
+    font-size: .9rem;
+    color: var(--muted);
+    flex-grow: 1;
+  }
+  .tool-card .go {
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .no-results {
+    text-align: center;
+    color: var(--muted);
+    padding: 36px 12px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+  }
+
+  /* Content sections */
+  section.copy {
+    margin: 56px auto 0;
+    max-width: 680px;
+  }
+  section.copy h2 {
+    font-size: 1.35rem;
+    letter-spacing: -.01em;
+    margin-bottom: 14px;
+  }
+  section.copy p + p { margin-top: 12px; }
+  section.copy p { color: var(--muted); }
+
+  /* FAQ */
+  .faq details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-top: 10px;
+    box-shadow: var(--shadow);
+  }
+  .faq summary {
+    cursor: pointer;
+    font-weight: 600;
+    list-style-position: inside;
+  }
+  .faq details p {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: .95rem;
+  }
+
+  /* Footer */
+  footer.site {
+    margin-top: 64px;
+    border-top: 1px solid var(--border);
+    padding: 28px 0 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: .9rem;
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+          <rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/>
+          <rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/>
+          <rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/>
+          <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>
+        </svg>
+      </span>
+      <h1>Everyday Tools</h1>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section class="hero">
+      <h2>Fast, free tools — <span class="accent">private by design</span></h2>
+      <p>No signup. No tracking. Everything runs in your browser.</p>
+    </section>
+
+    <div class="filter-row">
+      <label for="tool-filter">Filter tools</label>
+      <input type="search" id="tool-filter" placeholder="Try &quot;invoice&quot; or &quot;time zone&quot;&hellip;" autocomplete="off">
+      <span class="filter-status" id="filter-status" role="status" aria-live="polite"></span>
+    </div>
+
+    <div class="grid" id="tool-grid">
+
+      <a class="tool-card" href="tools/invoice-generator.html" data-tags="billing bill pdf print client payment freelancer">
+        <span class="tool-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+            <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"/>
+            <path d="M14 2v5h5"/>
+            <path d="M9 13h6M9 17h4"/>
+          </svg>
+        </span>
+        <h3>Invoice Generator</h3>
+        <p>Create and print professional invoices in seconds.</p>
+        <span class="go">Open tool
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <a class="tool-card" href="tools/freelance-rate-calculator.html" data-tags="hourly day rate pricing income salary consultant">
+        <span class="tool-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+            <rect x="5" y="2.5" width="14" height="19" rx="2"/>
+            <path d="M8.5 6.5h7"/>
+            <path d="M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h.01M15.5 18h.01"/>
+          </svg>
+        </span>
+        <h3>Freelance Rate Calculator</h3>
+        <p>Work out what to charge from your target income.</p>
+        <span class="go">Open tool
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <a class="tool-card" href="tools/loan-payoff-calculator.html" data-tags="debt mortgage interest extra payment amortization credit">
+        <span class="tool-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+            <path d="M3 17l6-6 4 4 8-8"/>
+            <path d="M21 12V7h-5"/>
+          </svg>
+        </span>
+        <h3>Loan Payoff Calculator</h3>
+        <p>See what extra payments really save.</p>
+        <span class="go">Open tool
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <a class="tool-card" href="tools/meeting-time-planner.html" data-tags="timezone time zone schedule overlap world clock remote team">
+        <span class="tool-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 7v5l3.5 2"/>
+          </svg>
+        </span>
+        <h3>Meeting Time Planner</h3>
+        <p>Find overlap across time zones instantly.</p>
+        <span class="go">Open tool
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <a class="tool-card" href="tools/ai-cost-calculator.html" data-tags="llm tokens pricing model gpt claude gemini api usage">
+        <span class="tool-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+            <rect x="6" y="6" width="12" height="12" rx="2"/>
+            <path d="M9 1.5v3M15 1.5v3M9 19.5v3M15 19.5v3M1.5 9h3M1.5 15h3M19.5 9h3M19.5 15h3"/>
+            <rect x="10" y="10" width="4" height="4" rx="1"/>
+          </svg>
+        </span>
+        <h3>AI API Cost Calculator</h3>
+        <p>Compare model costs for your real usage.</p>
+        <span class="go">Open tool
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+    </div>
+
+    <p class="no-results" id="no-results" hidden>No tools match that filter. Try a different word, or clear the box to see all five.</p>
+
+    <section aria-labelledby="services-cta-heading" style="margin: 34px 0; padding: 26px 24px; background: var(--accent-soft); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);">
+      <h2 id="services-cta-heading" style="font-size: 1.25rem; margin-bottom: 6px;">Need a tool like these for your own business?</h2>
+      <p style="color: var(--muted); margin-bottom: 14px;">Custom calculators, generators, and mini-dashboards — built to your spec and delivered within 24 hours. You own the code outright.</p>
+      <a href="services.html" style="display: inline-block; background: var(--accent); color: var(--accent-contrast); text-decoration: none; font-weight: 600; padding: 10px 18px; border-radius: 10px;">Get a custom tool →</a>
+    </section>
+
+    <section class="copy">
+      <h2>How this works</h2>
+      <p>Every tool on this site is a single, self-contained web page. When you open one, your browser downloads the whole thing — the layout, the styling, and the calculation logic — in one request. After that, nothing else is fetched and nothing is sent back. Type an invoice amount, a loan balance, or a list of time zones, and the math happens on your own device using plain JavaScript.</p>
+      <p>That design has three practical benefits. First, privacy: your figures, client names, and schedules never travel over the network, so there is nothing for us to store, leak, or sell. Second, speed: with no server round-trips, results update the instant you type. Third, reliability: once a page has loaded, it keeps working on a flaky connection, on a plane, or saved to your desktop as a local file.</p>
+      <p>There is no account system because none is needed — your inputs stay in the page, and a few tools offer an optional save that uses your browser's local storage only. If you want to double-check any result, view the page source: all of the logic is readable, unminified JavaScript.</p>
+    </section>
+
+    <section class="copy faq" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">Frequently asked questions</h2>
+
+      <details>
+        <summary>Are these tools really free?</summary>
+        <p>Yes. All five tools are completely free, with no paywalls, trials, usage limits, or premium tiers. Because everything runs in your browser, serving them costs almost nothing, so there is no reason to charge.</p>
+      </details>
+
+      <details>
+        <summary>Is my data uploaded to a server?</summary>
+        <p>No. Invoice details, income figures, loan balances, and schedules are processed entirely on your device by JavaScript running in the page. Nothing you type is transmitted, logged, or stored on any server.</p>
+      </details>
+
+      <details>
+        <summary>Do the tools work offline?</summary>
+        <p>Yes. Each tool is one self-contained file with no external dependencies, so once a page has loaded it keeps working without a connection. You can even save a page to your computer and open it later from a local file.</p>
+      </details>
+
+      <details>
+        <summary>Do I need to create an account?</summary>
+        <p>No. There are no accounts, logins, or email signups anywhere on the site. Open a tool, use it, and close the tab — that is the entire flow.</p>
+      </details>
+
+      <details>
+        <summary>Can I use these tools on my phone?</summary>
+        <p>Yes. Every page is responsive and works on screens from small phones up to large desktop monitors, in any modern browser, with no app to install.</p>
+      </details>
+    </section>
+
+    <!-- MONETIZATION SLOT: affiliate/ad -->
+
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p>Free forever · No signup · Runs entirely in your browser</p>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Are these tools really free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. All five tools are completely free, with no paywalls, trials, usage limits, or premium tiers. Because everything runs in your browser, serving them costs almost nothing, so there is no reason to charge."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my data uploaded to a server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Invoice details, income figures, loan balances, and schedules are processed entirely on your device by JavaScript running in the page. Nothing you type is transmitted, logged, or stored on any server."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do the tools work offline?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Each tool is one self-contained file with no external dependencies, so once a page has loaded it keeps working without a connection. You can even save a page to your computer and open it later from a local file."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need to create an account?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. There are no accounts, logins, or email signups anywhere on the site. Open a tool, use it, and close the tab — that is the entire flow."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use these tools on my phone?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Every page is responsive and works on screens from small phones up to large desktop monitors, in any modern browser, with no app to install."
+      }
+    }
+  ]
+}
+</script>
+
+<script>
+(function () {
+  "use strict";
+  var input = document.getElementById("tool-filter");
+  var status = document.getElementById("filter-status");
+  var noResults = document.getElementById("no-results");
+  var cards = Array.prototype.slice.call(document.querySelectorAll(".tool-card"));
+
+  function applyFilter() {
+    var q = input.value.trim().toLowerCase();
+    var shown = 0;
+
+    cards.forEach(function (card) {
+      var haystack = (card.textContent + " " + (card.getAttribute("data-tags") || "")).toLowerCase();
+      var match = q === "" || haystack.indexOf(q) !== -1;
+      card.classList.toggle("is-hidden", !match);
+      if (match) shown++;
+    });
+
+    noResults.hidden = shown !== 0;
+
+    if (q === "") {
+      status.textContent = "Showing all " + cards.length + " tools.";
+    } else if (shown === 0) {
+      status.textContent = "No tools match “" + input.value.trim() + "”.";
+    } else {
+      status.textContent = shown + (shown === 1 ? " tool matches." : " tools match.");
+    }
+  }
+
+  input.addEventListener("input", applyFilter);
+  applyFilter();
+})();
+</script>
+
+</body>
+</html>
